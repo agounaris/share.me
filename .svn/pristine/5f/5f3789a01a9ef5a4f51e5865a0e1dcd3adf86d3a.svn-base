@@ -1,0 +1,244 @@
+
+# This is a fix for InnoDB in MySQL >= 4.1.x
+# It "suspends judgement" for fkey relationships until are tables are set.
+SET FOREIGN_KEY_CHECKS = 0;
+
+#-----------------------------------------------------------------------------
+#-- ldap_sf_user
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `ldap_sf_user`;
+
+
+CREATE TABLE `ldap_sf_user`
+(
+	`user_id` INTEGER  NOT NULL,
+	`uid` INTEGER  NOT NULL,
+	`id` INTEGER  NOT NULL AUTO_INCREMENT,
+	PRIMARY KEY (`id`),
+	INDEX `ldap_sf_user_FI_1` (`user_id`),
+	CONSTRAINT `ldap_sf_user_FK_1`
+		FOREIGN KEY (`user_id`)
+		REFERENCES `sf_guard_user` (`id`)
+		ON DELETE CASCADE
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- ldap_sf_group
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `ldap_sf_group`;
+
+
+CREATE TABLE `ldap_sf_group`
+(
+	`group_id` INTEGER  NOT NULL,
+	`gid` INTEGER  NOT NULL,
+	`id` INTEGER  NOT NULL AUTO_INCREMENT,
+	PRIMARY KEY (`id`),
+	INDEX `ldap_sf_group_FI_1` (`group_id`),
+	CONSTRAINT `ldap_sf_group_FK_1`
+		FOREIGN KEY (`group_id`)
+		REFERENCES `sf_guard_group` (`id`)
+		ON DELETE CASCADE
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- ldap_server
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `ldap_server`;
+
+
+CREATE TABLE `ldap_server`
+(
+	`id` INTEGER  NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(20),
+	`host` VARCHAR(200),
+	`port` INTEGER default 389 NOT NULL,
+	`tls` TINYINT default 0 NOT NULL,
+	`basedn` VARCHAR(100),
+	`user_prefix` VARCHAR(100),
+	`group_prefix` VARCHAR(100),
+	`binddn` VARCHAR(100),
+	`bindpasswd` VARCHAR(20),
+	`user_attr` VARCHAR(20),
+	`status` TINYINT default 0 NOT NULL,
+	PRIMARY KEY (`id`)
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- client
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `client`;
+
+
+CREATE TABLE `client`
+(
+	`id` INTEGER  NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(128)  NOT NULL,
+	`created_by` INTEGER  NOT NULL,
+	`updated_at` DATETIME,
+	`created_at` DATETIME,
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `client_U_1` (`name`),
+	INDEX `client_FI_1` (`created_by`),
+	CONSTRAINT `client_FK_1`
+		FOREIGN KEY (`created_by`)
+		REFERENCES `sf_guard_user` (`id`)
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- project
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `project`;
+
+
+CREATE TABLE `project`
+(
+	`id` INTEGER  NOT NULL AUTO_INCREMENT,
+	`client_id` INTEGER  NOT NULL,
+	`name` VARCHAR(128)  NOT NULL,
+	`created_by` INTEGER  NOT NULL,
+	`archived` TINYINT default 0,
+	`url` VARCHAR(512),
+	`updated_at` DATETIME,
+	`created_at` DATETIME,
+	`expires_at` DATE,
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `project_U_1` (`name`),
+	INDEX `project_FI_1` (`client_id`),
+	CONSTRAINT `project_FK_1`
+		FOREIGN KEY (`client_id`)
+		REFERENCES `client` (`id`)
+		ON DELETE CASCADE,
+	INDEX `project_FI_2` (`created_by`),
+	CONSTRAINT `project_FK_2`
+		FOREIGN KEY (`created_by`)
+		REFERENCES `sf_guard_user` (`id`)
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- image
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `image`;
+
+
+CREATE TABLE `image`
+(
+	`id` INTEGER  NOT NULL AUTO_INCREMENT,
+	`image_file` VARCHAR(200),
+	`project_id` INTEGER  NOT NULL,
+	`created_by` INTEGER  NOT NULL,
+	`archived` TINYINT default 0,
+	`updated_at` DATETIME,
+	`created_at` DATETIME,
+	PRIMARY KEY (`id`),
+	INDEX `image_FI_1` (`project_id`),
+	CONSTRAINT `image_FK_1`
+		FOREIGN KEY (`project_id`)
+		REFERENCES `project` (`id`),
+	INDEX `image_FI_2` (`created_by`),
+	CONSTRAINT `image_FK_2`
+		FOREIGN KEY (`created_by`)
+		REFERENCES `sf_guard_user` (`id`)
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- image_comment
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `image_comment`;
+
+
+CREATE TABLE `image_comment`
+(
+	`id` INTEGER  NOT NULL AUTO_INCREMENT,
+	`image_id` INTEGER  NOT NULL,
+	`comment` VARCHAR(2000)  NOT NULL,
+	`created_by` INTEGER  NOT NULL,
+	`creator_is` VARCHAR(30)  NOT NULL,
+	`updated_at` DATETIME,
+	`created_at` DATETIME,
+	PRIMARY KEY (`id`),
+	INDEX `image_comment_FI_1` (`image_id`),
+	CONSTRAINT `image_comment_FK_1`
+		FOREIGN KEY (`image_id`)
+		REFERENCES `image` (`id`),
+	INDEX `image_comment_FI_2` (`created_by`),
+	CONSTRAINT `image_comment_FK_2`
+		FOREIGN KEY (`created_by`)
+		REFERENCES `sf_guard_user` (`id`)
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- sf_guard_user_project
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `sf_guard_user_project`;
+
+
+CREATE TABLE `sf_guard_user_project`
+(
+	`user_id` INTEGER  NOT NULL,
+	`project_id` INTEGER  NOT NULL,
+	PRIMARY KEY (`user_id`,`project_id`),
+	CONSTRAINT `sf_guard_user_project_FK_1`
+		FOREIGN KEY (`user_id`)
+		REFERENCES `sf_guard_user` (`id`)
+		ON DELETE CASCADE,
+	INDEX `sf_guard_user_project_FI_2` (`project_id`),
+	CONSTRAINT `sf_guard_user_project_FK_2`
+		FOREIGN KEY (`project_id`)
+		REFERENCES `project` (`id`)
+		ON DELETE CASCADE
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- sf_guard_group_project
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `sf_guard_group_project`;
+
+
+CREATE TABLE `sf_guard_group_project`
+(
+	`group_id` INTEGER  NOT NULL,
+	`client_id` INTEGER  NOT NULL,
+	PRIMARY KEY (`group_id`,`client_id`),
+	CONSTRAINT `sf_guard_group_project_FK_1`
+		FOREIGN KEY (`group_id`)
+		REFERENCES `sf_guard_group` (`id`)
+		ON DELETE CASCADE,
+	INDEX `sf_guard_group_project_FI_2` (`client_id`),
+	CONSTRAINT `sf_guard_group_project_FK_2`
+		FOREIGN KEY (`client_id`)
+		REFERENCES `client` (`id`)
+		ON DELETE CASCADE
+)Engine=InnoDB;
+
+#-----------------------------------------------------------------------------
+#-- image_mark
+#-----------------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `image_mark`;
+
+
+CREATE TABLE `image_mark`
+(
+	`id` INTEGER  NOT NULL AUTO_INCREMENT,
+	`image_id` INTEGER  NOT NULL,
+	`point_x` INTEGER  NOT NULL,
+	`point_y` INTEGER  NOT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `image_mark_FI_1` (`image_id`),
+	CONSTRAINT `image_mark_FK_1`
+		FOREIGN KEY (`image_id`)
+		REFERENCES `image` (`id`)
+)Engine=InnoDB;
+
+# This restores the fkey checks, after having unset them earlier
+SET FOREIGN_KEY_CHECKS = 1;

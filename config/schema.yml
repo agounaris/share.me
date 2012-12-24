@@ -1,0 +1,86 @@
+propel:
+  _attributes:
+    package: lib.model
+    defaultIdMethod: native
+
+  ldap_sf_user:
+    _attributes: { phpName: LDAPSfUser }
+    user_id:     { type: integer, foreignTable: sf_guard_user, foreignReference: id, required: true, onDelete: cascade }
+    uid:         { type: integer, required: true }
+
+  ldap_sf_group:
+    _attributes: { phpName: LDAPSfGroup }
+    group_id:    { type: integer, foreignTable: sf_guard_group, foreignReference: id, required: true, onDelete: cascade }
+    gid:         { type: integer, required: true }
+
+  ldap_server:
+    _attributes: { phpName: LDAPServer }
+    id:
+    name:		  varchar(20)
+    host:    	  varchar(200)
+    port:         { type: integer, required: true, default: 389 }
+    tls:          { type: boolean, required: true, default: 0 }
+    basedn:		  varchar(100)
+    user_prefix:  varchar(100)
+    group_prefix: varchar(100)
+    binddn:       varchar(100)
+    bindpasswd:   varchar(20)
+    user_attr:    varchar(20)
+    status:       {type: boolean, required: true, default: 0 }
+
+  client:
+    _attributes: { phpName: Client }
+    id:          ~
+    name:        { type: varchar, size: 128, required: true, index: unique }
+    created_by:  { type: integer, foreignTable: sf_guard_user, foreignReference: id, required: true }
+    updated_at:  ~
+    created_at:  ~
+
+  project:
+    _attributes: { phpName: Project }
+    id:          ~
+    client_id:   { type: integer, foreignTable: client, foreignReference: id, required: true, onDelete: cascade }
+    name:        { type: varchar, size: 128, required: true, index: unique }
+    created_by:  { type: integer, foreignTable: sf_guard_user, foreignReference: id, required: true }
+    archived:    { type: tinyint, required: false, default: 0 }
+    url:         { type: varchar, size: 512, required: false }
+    updated_at:  ~
+    created_at:  ~
+    expires_at:  { type: date }
+
+  image:
+    _attributes: { phpName: Image }
+    id:          ~
+    image_file:  { type: varchar, size: 200, required: false }
+    project_id:  { type: integer, foreignTable: project, foreignReference: id, required: true }
+    created_by:  { type: integer, foreignTable: sf_guard_user, foreignReference: id, required: true }
+    archived:    { type: tinyint, required: false, default: 0 }
+    updated_at:  ~
+    created_at:  ~
+
+  image_comment:
+    _attributes: { phpName: ImageComment }
+    id:          ~
+    image_id:    { type: integer, foreignTable: image, foreignReference: id, required: true }
+    comment:     { type: varchar, size: 2000, required: true }
+    created_by:  { type: integer, foreignTable: sf_guard_user, foreignReference: id, required: true }
+    creator_is:  { type: varchar, size: 30, required: true }
+    updated_at:  ~
+    created_at:  ~
+
+  sf_guard_user_project:
+    _attributes:    { phpName: sfGuardUserProject }
+    user_id:        { type: integer, primaryKey: true, required: true, foreignTable: sf_guard_user, foreignReference: id, onDelete: cascade }
+    project_id:     { type: integer, primaryKey: true, required: true, foreignTable: project, foreignReference: id, onDelete: cascade }
+
+  sf_guard_group_project:
+    _attributes:    { phpName: sfGuardGroupProject }
+    group_id:       { type: integer, primaryKey: true, required: true, foreignTable: sf_guard_group, foreignReference: id, onDelete: cascade }
+    client_id:      { type: integer, primaryKey: true, required: true, foreignTable: client, foreignReference: id, onDelete: cascade }
+
+  image_mark:
+    _attributes:    { phpName: ImageMark}
+    id:             ~
+    image_id:       { type: integer, foreignTable: image, foreignReference: id, required: true }
+    point_x:        { type: integer, required: true }
+    point_y:        { type: integer, required: true }

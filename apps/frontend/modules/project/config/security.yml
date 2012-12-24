@@ -1,0 +1,7 @@
+all:
+ is_secure: on
+ credentials: [[admin,manage_content,manage_project]]
+ 
+show:
+  is_secure: on
+  credentials: [[admin,manage_content,manage_project,read_project]]
