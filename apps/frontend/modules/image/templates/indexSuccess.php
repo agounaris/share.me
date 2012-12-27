@@ -1,15 +1,5 @@
 <h3 class="list_title">Images List</h3>
 
-<script type="text/javascript">
-
-    $(function () {
-
-        var deleteCheckbox = $('.delete-checkbox');
-
-    });
-
-</script>
-
 <div id="image-pop-up" class="shadow"></div>
 
 <?php if ($sf_user->hasFlash('notice')): ?>

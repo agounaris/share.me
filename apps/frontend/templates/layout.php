@@ -36,11 +36,6 @@
     <link rel="stylesheet" type="text/css" media="screen" href="/js/ui-lightness/jquery-ui-1.8.16.custom.css"/>
     <link rel="stylesheet" type="text/css" media="screen" href="/css/style.css"/>
 
-    <?php include_javascripts() ?>
-    <script type="text/javascript" src="/js/jquery-ui-1.8.16.custom.min.js"></script>
-    <script type="text/javascript" src="/js/plugins.js"></script>
-    <script type="text/javascript" src="/js/script.js"></script>
-
 </head>
 
 <body <?php if (!include_slot('body_id')): ?>id="default"<?php endif; ?>>
@@ -153,8 +148,10 @@
 
     </div>
 
-    <p>&copy; AlchemyWorx Ltd <?php echo date("Y")?></p>
+    <p>&copy; Share.me <?php echo date("Y")?></p>
 </footer>
+
+<?php include_javascripts() ?>
 
 
 </body>

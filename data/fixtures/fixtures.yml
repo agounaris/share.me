@@ -17,30 +17,22 @@
 #     email:    kris.wallsmith@symfony-project.com
 LDAPServer:
   ldapServer_1:
-    name: 'Alchemy LDAP'
-    host: 192.168.1.12
+    name: 'our ldap'
+    host: 127.0.0.1
     port: '389'
     tls: '0'
-    basedn: 'dc=alchemyworx,dc=local'
+    basedn: 'dc=localdap,dc=local'
     user_prefix: ou=people
     group_prefix: ou=groups
-    binddn: 'cn=admin,dc=alchemyworx,dc=local'
-    bindpasswd: st0n3s2010
+    binddn: 'cn=admin,dc=localdal,dc=local'
+    bindpasswd: toor
     user_attr: uid
     status: '1'
 
 sfGuardUser:
-  sp_1:
-    username:       spandey
-    password:       test
-    is_super_admin: true
-  sp_2:
-    username: agounaris
-    password:       test
-    is_super_admin: true
-  manager:
-    username:       manager
-    password:       manager
+  sp:
+    username: admin
+    password: adminpass
     is_super_admin: true
 
 sfGuardPermission:
@@ -52,7 +44,7 @@ sfGuardPermission:
     description: 'Production permission'
   sfGuardPermission_3:
     name: manage_project
-    description: 'Campaign manager permission'
+    description: 'Manager permission'
   sfGuardPermission_4:
     name: read_project
     description: 'Client permission'

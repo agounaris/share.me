@@ -251,7 +251,7 @@ class projectActions extends sfActions
 
     protected function createImageForProjectUrl($projectId, $projectName, $projectUrl)
     {
-        $path = '/home/agounaris/projects/workshare/web/uploads/images/';
+        $path = '/home/argiris/Development/share.me/web/uploads/images/';
 
         exec('touch ' . $path . 'render.js');
 

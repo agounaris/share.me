@@ -1,6 +1,9 @@
+@CHARSET "UTF-8";
+
+
 #logo{
 	padding:0;	
-	background:url(/img/logo.png) no-repeat left;
+	background:url(/images/shareme.png) no-repeat left;
 	width:100%;
 	background-color: #fff;
 	height:80px;
